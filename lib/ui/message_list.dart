@@ -81,7 +81,6 @@ class _MessageListState extends State<MessageList> {
                 )
               ],
             ),
-            Text(_message),
           ],
         ),
       ),
