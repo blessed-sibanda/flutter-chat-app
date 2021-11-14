@@ -24,24 +24,13 @@ class MyApp extends StatelessWidget {
           lazy: false,
         ),
       ],
-      child: const Home(),
-    );
-  }
-}
-
-class Home extends StatelessWidget {
-  const Home({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Chat',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      // TODO: Add Consumer<UserDao> here
-      home: const MessageList(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Chat',
+        theme: ThemeData(primarySwatch: Colors.blue),
+        // TODO: Add Consumer<UserDao> here
+        home: const MessageList(),
+      ),
     );
   }
 }

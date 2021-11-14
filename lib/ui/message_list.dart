@@ -52,8 +52,7 @@ class _MessageListState extends State<MessageList> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // TODO: Add Message DAO to _getMessageList
-            _getMessageList(),
+            _getMessageList(messageDao),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -100,12 +99,28 @@ class _MessageListState extends State<MessageList> {
     }
   }
 
-  // TODO: Replace _getMessageList
-  Widget _getMessageList() {
-    return const SizedBox.shrink();
+  Widget _getMessageList(MessageDao messageDao) {
+    return Expanded(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: messageDao.getMessageStream(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: LinearProgressIndicator());
+          }
+          return _buildList(context, snapshot.data!.docs);
+        },
+      ),
+    );
   }
 
-  // TODO: Add _buildList
+  Widget _buildList(BuildContext context, List<DocumentSnapshot>? snapshot) {
+    return ListView(
+        controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(top: 20),
+        children:
+            snapshot!.map((data) => _buildListItem(context, data)).toList());
+  }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
     final message = Message.fromSnapshot(snapshot);

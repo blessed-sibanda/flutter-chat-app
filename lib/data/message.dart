@@ -14,12 +14,10 @@ class Message {
     this.reference,
   });
 
-  // TODO: Add JSON converters
-
   factory Message.fromJson(Map<dynamic, dynamic> json) => Message(
         text: json['text'],
         date: DateTime.parse(json['date'] as String),
-        email: json['email'] as String,
+        email: json['email'] as String?,
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
