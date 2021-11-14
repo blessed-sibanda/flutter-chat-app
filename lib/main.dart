@@ -17,7 +17,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Add MultiProvider
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<UserDao>(
