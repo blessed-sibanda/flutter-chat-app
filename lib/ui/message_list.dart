@@ -1,5 +1,10 @@
+import 'package:chat/data/message.dart';
+import 'package:chat/data/message_dao.dart';
+import 'package:chat/ui/message_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MessageList extends StatefulWidget {
   const MessageList({Key? key}) : super(key: key);
@@ -13,16 +18,13 @@ class _MessageListState extends State<MessageList> {
   final ScrollController _scrollController = ScrollController();
   // TODO: Add Email String
 
-  String _message = '';
-
   bool _canSendMessage = false;
 
   @override
   void initState() {
     _messageController.addListener(() {
       setState(() {
-        _message = _messageController.text;
-        _canSendMessage = _message.isNotEmpty;
+        _canSendMessage = _messageController.text.isNotEmpty;
       });
     });
     super.initState();
@@ -37,7 +39,7 @@ class _MessageListState extends State<MessageList> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance!.addPostFrameCallback((_) => _scrollToBottom());
-    // TODO: Add MessageDao
+    final messageDao = Provider.of<MessageDao>(context, listen: false);
 
     // TODO: Add UserDao
 
@@ -62,8 +64,7 @@ class _MessageListState extends State<MessageList> {
                       keyboardType: TextInputType.text,
                       controller: _messageController,
                       onSubmitted: (input) {
-                        // TODO: Add Message DAO 1
-                        _sendMessage();
+                        _sendMessage(messageDao);
                       },
                       decoration:
                           const InputDecoration(hintText: 'Enter new message'),
@@ -75,8 +76,7 @@ class _MessageListState extends State<MessageList> {
                       ? CupertinoIcons.arrow_right_circle_fill
                       : CupertinoIcons.arrow_right_circle),
                   onPressed: () {
-                    // TODO: Add Message DAO 2
-                    _sendMessage();
+                    _sendMessage(messageDao);
                   },
                 )
               ],
@@ -88,7 +88,17 @@ class _MessageListState extends State<MessageList> {
   }
 
   // TODO: Replace _sendMessage
-  void _sendMessage() {}
+  void _sendMessage(MessageDao messageDao) {
+    if (_canSendMessage) {
+      final message = Message(
+        text: _messageController.text,
+        date: DateTime.now(),
+      );
+      messageDao.saveMessage(message);
+      _messageController.clear();
+      setState(() {});
+    }
+  }
 
   // TODO: Replace _getMessageList
   Widget _getMessageList() {
@@ -97,7 +107,10 @@ class _MessageListState extends State<MessageList> {
 
   // TODO: Add _buildList
 
-  // TODO: Add _buildListItem
+  Widget _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
+    final message = Message.fromSnapshot(snapshot);
+    return MessageWidget(message.text, message.date, message.email);
+  }
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
