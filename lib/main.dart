@@ -1,4 +1,6 @@
 import 'package:chat/data/message_dao.dart';
+import 'package:chat/data/user_dao.dart';
+import 'package:chat/ui/login.dart';
 import 'package:chat/ui/message_list.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -18,19 +20,28 @@ class MyApp extends StatelessWidget {
     // TODO: Add MultiProvider
     return MultiProvider(
       providers: [
-        // TODO: Add ChangeNotifierProvider<UserDao> here
+        ChangeNotifierProvider<UserDao>(
+          create: (_) => UserDao(),
+          lazy: false,
+        ),
         Provider<MessageDao>(
           create: (_) => MessageDao(),
           lazy: false,
         ),
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Chat',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        // TODO: Add Consumer<UserDao> here
-        home: const MessageList(),
-      ),
+          debugShowCheckedModeBanner: false,
+          title: 'Chat',
+          theme: ThemeData(primarySwatch: Colors.blue),
+          home: Consumer<UserDao>(
+            builder: (context, userDao, child) {
+              if (userDao.isLoggedIn()) {
+                return const MessageList();
+              } else {
+                return const Login();
+              }
+            },
+          )),
     );
   }
 }
